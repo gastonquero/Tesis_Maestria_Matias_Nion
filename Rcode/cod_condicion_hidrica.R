@@ -7,7 +7,7 @@
 
 
 getwd ()
-setwd ("C:/Users/Usuario/OneDrive/Documentos/Tesis_Maestria_Matias")
+setwd ("R:/Tesis_Maestria_Matias_Nion")
 
 
 # Paquetes 
@@ -199,10 +199,6 @@ t1.1 <- dmy (t1)
 consumo.2 <- consumo.2 %>%
              dplyr::mutate (dias = Date - t1.1)
                  
-                 
-                 
-                 
-                 
 ggscatter (consumo.2 , x = "dias", y = "hp.porc", facet.by = "clon",
            color="tratamiento",
            palette = c("navyblue", "darkorange"),
@@ -212,27 +208,8 @@ ggscatter (consumo.2 , x = "dias", y = "hp.porc", facet.by = "clon",
            ylab = "HP (%)",
            point=TRUE) 
 
-
-
-ggboxplot (consumo.2 , x ="tratamiento", y = "hp.porc", facet.by = "clon",
-           color="black", fill= "tratamiento",
-           palette = c("darkorange","navyblue" ),
-           add = "mean_sd", 
-           xlab = "trat",
-           ylab = "HP (%)")
-
-ggviolin (consumo.2 , x ="tratamiento", y = "hp.porc", facet.by = "clon",
-           color="tratamiento",
-           palette = c("blue", "red"),
-           add = "jitter", 
-           xlab = "trat",
-           ylab = "HP (%)")
-
-
-
-
-  
-  #geom_line(color = "gray48", linetype =2, size = 0.5) +
-  #geom_point(color = "black", size = 1.5) +
-  geom_hline(yintercept = mean (hp.porc, na.rm = TRUE ), linetype =3, size = 1) #+
+summary (consumo.2)
+consumo.3 <- consumo.2 %>%
+             group_by (tratamiento)%>%
+             summarise(hp.mean = mean(hp.porc , na.rm = TRUE), agua.mean = mean(agua , na.rm = TRUE))
 
