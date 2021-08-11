@@ -219,12 +219,21 @@ periodo_2.dpv <- periodo_2.t %>%
 demanda_periodo <- bind_rows (periodo_1.dpv,
                               periodo_2.dpv)
 
+
+demanda_periodo <- demanda_periodo %>%
+                    dplyr::mutate (pvs.max= (round (pvs.max,2)))%>%
+                    dplyr::mutate (pvs.min= (round (pvs.min,2))) %>%
+                    dplyr::mutate (pvs.med= (round (pvs.med,2))) %>%
+                    dplyr::mutate (pva = (round (pva,2))) %>%
+                    dplyr::mutate (dpv = (round (dpv,2))) 
+  
 write_delim (demanda_periodo , file ="./Data/procdata/demanda_periodo.txt", 
              delim = ";", na = "NA")
 
 
 
 unique (periodo_2$fecha.1 )
+
 ## primera figura de la demanda
 
 unique (sensor.1a$hora.fact)
