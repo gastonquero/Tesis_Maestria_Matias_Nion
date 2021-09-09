@@ -69,6 +69,11 @@ crecimiento.MN.3a <- crecimiento.MN.3 %>%
                      dplyr::select (c(ensayo, ambiente, genotipo,
                                       cond.hidr, pos, everything()))
 
+unique (crecimiento.MN.3a$cond.hidr )
+
+crecimiento.MN.3a <- crecimiento.MN.3a %>%
+                      dplyr::mutate (cond.hidr = recode (cond.hidr, c= "CH1", d="CH2"))
+
 crecimiento.MN.3b <- crecimiento.MN.3a %>%
                     dplyr::mutate (date = dmy (fecha)) %>%
                     dplyr::mutate (pot = str_c (pos,genotipo,cond.hidr, sep="."))
@@ -91,13 +96,12 @@ t2 = "22/03/2020"
 t0 <- dmy (t0)
 t1 <- dmy (t1)
 t2 <- dmy (t2)
-  
-  
+
 listapot <- unique(crecimiento.MN.3b$pot)
   
   df.TC <- bind_rows ((lapply (listapot, function(filt.pot){
     
-    #filt.pot = "3.g1.d"
+     #filt.pot = "3.g1.d"
     print (filt.pot)
     
     dt.pot <- crecimiento.MN.3b %>%
@@ -183,207 +187,41 @@ listapot <- unique(crecimiento.MN.3b$pot)
                  dplyr::mutate (cond.term = str_c (duracion,cond.hidr, sep="."))
   
   
-  ggboxplot (df.TC.ST_LT, "genotipo", "TCR",
+  ggboxplot (df.TC.ST_LT, "genotipo", "TCA",
              facet.by = "duracion",
              add = "mean_sd", 
              #fill="cond.hidr", 
              color = "cond.hidr",
-             palette = c("darkorange", "navyblue"))
-  
-  ggdotplot (df.TC.ST_LT, "genotipo", "TCA",
-             facet.by ="cond.hidr",
-             add = "mean_sd", 
-             fill="duracion", color = "duracion",
-             palette = c("gray48", "red"))
-  
-  ggdotplot (df.TC.ST_LT, "genotipo", "TCA",
-             add = "mean_sd", 
-             fill="cond.term", color = "cond.term",
-             palette = c("darkorange", "navyblue", "black", "green"))
-  
-  
-  
-  
-  
-  
-  unique (  df.TC.ST_LT$cond.term )
-  
-  
- 
-  ggdotplot (df.TC.ST_LT, "genotipo", "TCR",
-             add = "mean_sd", 
-             fill="cond.term", color = "cond.term",
-             palette = c("darkorange", "navyblue", "black", "green"))
-  
-  
-  
-  ggboxplot (df.TC.ST_LT, "duracion", "TCA",facet.by = "genotipo"
-             , color = "cond.hidr",
-            palette = c("#00AFBB", "#E7B800")) 
-  
-  ggboxplot (df.TC.ST_LT, "duracion", "TCR",facet.by = "genotipo"
-             , color = "cond.hidr",
-             palette = c("#00AFBB", "#E7B800")) 
-  
-  ggboxplot (df.TC.ST_LT, "genotipo", "TCR",facet.by = "duracion"
-             , color = "cond.hidr",
-             palette = c("#00AFBB", "#E7B800")) 
-  
-  ggboxplot (df.TC.ST_LT, "genotipo", "TCA",facet.by = "duracion"
-             , color = "cond.hidr",
-             palette = c("#00AFBB", "#E7B800")) 
-  
-
-  
-  ggdotplot (df.TC.ST_LT, "genotipo", "TCA",
-             facet.by = "duracion",
-             add = "mean_sd", 
-             fill="cond.hidr", color = "cond.hidr",
-             palette = c("darkorange", "navyblue"))
-  
-  ggdotplot (df.TC.ST_LT, "duracion", "TCA",
-             facet.by =  "genotipo",
-             add = "mean_sd", 
-             fill="cond.hidr", color = "cond.hidr",
-             palette = c("darkorange", "navyblue"))
-  
-  
-  
-  
-  ggdotplot (df.TC.ST_LT, "genotipo", "TCA",
-             facet.by ="cond.hidr",
-             add = "mean_sd", 
-             fill="duracion", color = "duracion",
-             palette = c("gray48", "red"))
-  
-  ggdotplot (df.TC.ST_LT, "genotipo", "TCR",
-             facet.by ="cond.hidr",
-             add = "mean_sd", 
-             fill="duracion", color = "duracion",
-             palette = c("gray48", "red"))
-  
-  
-  
-  
-  df.TC.LT <- df.TC %>%
-              dplyr::filter (duracion != "ST_LT")
-  
-  
-  ggboxplot (df.TC.LT, "duracion", "TCA",facet.by = "genotipo"
-             , color = "cond.hidr",
-             palette = c("#00AFBB", "#E7B800")) 
-  
-  ggboxplot (df.TC.LT, "duracion", "TCR",facet.by = "genotipo"
-             , color = "cond.hidr",
-             palette = c("#00AFBB", "#E7B800")) 
-  
-  ggboxplot (df.TC.LT, "genotipo", "TCR",facet.by = "duracion"
-             , color = "cond.hidr",
-             palette = c("#00AFBB", "#E7B800")) 
-  
-  ggboxplot (df.TC.LT, "genotipo", "TCA",facet.by = "duracion"
-             , color = "cond.hidr",
-             palette = c("#00AFBB", "#E7B800")) 
-  
-  ggdotplot (df.TC.LT, "genotipo", "TCA",
-             facet.by = "duracion",
-             add = "mean_sd", 
-             fill="cond.hidr", color = "cond.hidr",
-             palette = c("darkorange", "navyblue")) 
-  
-  
-  ggdotplot (df.TC.LT, "genotipo", "TCA",
-             facet.by ="cond.hidr",
-             add = "mean_sd", 
-             fill="duracion", color = "duracion",
-             palette = c("gray48", "red")) 
-  
-  
-  
-      dplyr::mutate (dias = Date - date.1) %>%
-      dplyr::filter (E > 0)
-    
-    maceta <-  unique(datos$maceta)
-    clon   <-  unique(datos$clon)
-    trat   <- unique(datos$tratamiento)
-    
-    dat.E.1 <- data.frame( maceta=maceta, clon=clon, cond.hidrica = trat, pot=id, dat.E )
-    
-    dat.E.1 <-  dat.E.1 %>%
-      dplyr::select (maceta, clon, cond.hidrica, pot, dias, everything())
-    
-    
-    write.table ( dat.E.1, file =paste("./Data/outpout.E/dt.E","pot_",filtro,".txt",sep=""),
-                  append = FALSE, quote = TRUE, sep = ",",
-                  eol = "\n", na = "NA", dec = ".", row.names = FALSE,
-                  col.names = TRUE)
-    
-    return (dat.E.1)
-    
-  }))
+             palette = c("darkcyan", "firebrick1"))
 
 
 
-
-
-
-
-
-t1 = "12/11/2019"
-t1.1 <- dmy (t1)
+### grafico de altura 
 
 crecimiento.MN.3b <- crecimiento.MN.3b %>%
-                      dplyr::mutate (dias = date - t1.1) 
+                      dplyr::mutate (dias = date - t0) 
 
 
 head (crecimiento.MN.3b )
 
-list.pot <- unique (crecimiento.MN.3b$pot)
+
+ggline (crecimiento.MN.3b, x = "dias", y = "alt",
+        linetype = "genotipo", #title =  id.pot,
+        #shape = "genotipo",
+        add = "mean_sd",
+        color = "genotipo" ,
+        facet.by = "cond.hidr",
+        palette = c( "navyblue", "orange", "darkgreen", "red")
+        ) +
+      geom_vline (xintercept = 38 , linetype =2, size = 1, colour = "gray")+
+      geom_vline (xintercept = 131 , linetype =2, size = 1, colour = "gray")  
 
 
 
 
-
-
-
-
-
-
-lapply (list.pot, function (filt.pot){
-  
-  dt.pot <- crecimiento.MN.3b %>%
-            dplyr::filter (pot =="3.g1.d")
-  
-  id.pot <-  unique (dt.pot$pot)
-  
-  list.day <- unique (dt.pot$dias )
-  
-  alt1.1 <- dt.pot %>%
-             dplyr::filter (dias == 0 )
-  
-  alt1.2 <- dt.pot %>%
-            dplyr::filter (dias == 21 )
-  
-  
-  
-  ggline (dt.pot, x = "dias", y = "diam",
-          linetype = "genotipo", title =  id.pot,
-          #shape = "genotipo",
-          #add = "mean_se",
-          color = "genotipo", palette = "black")
-  
-  
-})
 
                      
 
-lapply (list.pot )
- ggscatter (dt.1 , x = "date", y = "alt", 
-            facet.by = "cond.hidr",
-            #title = unique(dt.1$pot), 
-                         xlab = "time (d)",
-                         ylab = "altura (cm)",
-                         point=TRUE)
  
 dt= crecimiento.MN.3b 
 t1 = t1 = "12/11/2019"
