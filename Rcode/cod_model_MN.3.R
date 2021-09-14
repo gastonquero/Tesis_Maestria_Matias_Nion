@@ -56,7 +56,7 @@ library(ggcorrplot)
 dir.data.base <- ("C:/Users/Usuario/OneDrive/Documentos/Paper_fotosintesis_dinamica")
 
 
-C:\Users\Usuario\OneDrive\Documentos\Paper_fotosintesis_dinamica\Data\procdata\MN_3
+#C:\Users\Usuario\OneDrive\Documentos\Paper_fotosintesis_dinamica\Data\procdata\MN_3
 
 
 ## MN.3
@@ -103,7 +103,7 @@ write_excel_csv (Phi.PSII.MN.3b , file ="./Data/procdata/Phi.PSII.MN.3b.csv",
                   na = "NA",
                   append = FALSE,
                   delim = ";",
-                  quote_escape = "double",
+                  escape = "double",
                   eol = "\n" )
 
 write_delim (Phi.PSII.MN.3b , file ="./Data/procdata/Phi.PSII.MN.3b.txt", 
@@ -116,9 +116,6 @@ unique  (Phi.PSII.MN.3b$protocolo)
 nion.1.act25.quenching <- Phi.PSII.MN.3b %>%
                           dplyr::filter (ciclo == max (ciclo) - 1)
 
-
-
-
 Phi.PSII.MN.3.ciclo.q <- bind_rows (nion.1.act25.quenching)
 
 
@@ -126,7 +123,7 @@ write_excel_csv (Phi.PSII.MN.3.ciclo.q, file ="./Data/procdata/Phi.PSII.MN.3.cic
                  na = "NA",
                  append = FALSE,
                  delim = ";",
-                 quote_escape = "double",
+                 escape = "double",
                  eol = "\n" )
 
 write_delim (Phi.PSII.MN.3.ciclo.q, file ="./Data/procdata/Phi.PSII.MN.3.ciclo.q.txt", 
@@ -143,6 +140,7 @@ Phi.PSII.MN.3.ciclo.q.1  <- Phi.PSII.MN.3.ciclo.q %>%
                             #dplyr::filter (phiNPQslow > -0.005 ) %>%
                             dplyr::filter ( qs.fo < 1 )
 
+summary (Phi.PSII.MN.3.ciclo.q.1 )
 
 Phi.PSII.MN.3.ciclo.q.1$phiNPQslow[Phi.PSII.MN.3.ciclo.q.1$phiNPQslow < 0] <- 0
 
