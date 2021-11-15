@@ -131,18 +131,23 @@ write_delim (Phi.PSII.MN.3.ciclo.q, file ="./Data/procdata/Phi.PSII.MN.3.ciclo.q
 
 ##################################### Plot ###
 # filtro los datos fuera de rango
+summary (Phi.PSII.MN.3.ciclo.q )
+
+Phi.PSII.MN.3.ciclo.q["phiNPQslow"][Phi.PSII.MN.3.ciclo.q["phiNPQslow"] < 0] <- 0
+dim ( Phi.PSII.MN.3.ciclo.q)
 
 phiNPQslow.neg <- Phi.PSII.MN.3.ciclo.q %>%
                   dplyr::filter (phiNPQslow < 0 ) %>%
                   dplyr::arrange (phiNPQslow )
 
+summary (phiNPQslow.neg )
+
 Phi.PSII.MN.3.ciclo.q.1  <- Phi.PSII.MN.3.ciclo.q %>%
                             #dplyr::filter (phiNPQslow > -0.005 ) %>%
                             dplyr::filter ( qs.fo < 1 )
+dim ( Phi.PSII.MN.3.ciclo.q.1)
 
 summary (Phi.PSII.MN.3.ciclo.q.1 )
-
-Phi.PSII.MN.3.ciclo.q.1$phiNPQslow[Phi.PSII.MN.3.ciclo.q.1$phiNPQslow < 0] <- 0
 
 
 Phi.PSII.MN.3.ciclo.q.1 <- Phi.PSII.MN.3.ciclo.q.1 %>%
@@ -208,6 +213,60 @@ leveneTest ( phiPS2 ~ trat, data = Phi.PSII.MN.3.ciclo.q.1)
 
 # ANAVA
 (anava.lm.phiPS2  <- anova (lm.phiPS2))
+
+
+data.model = lm.phiPS2
+
+#trait = "Phips2"
+#subfase =NULL
+
+list.geno <- unique(Phi.PSII.MN.3.ciclo.q.1$genotipo )
+
+run_contraste_phi <- function (data.model = NULL, trait = NULL, subfase =NULL){
+  
+  dt.c <- bind_rows (lapply( list.geno, function (filt.geno) {
+    
+    #filt.geno ="g2"
+    print (str_c (trait,"_",filt.geno))
+    
+    em.geno <- emmeans (data.model, ~cond.hidr |date,
+                        at = list (genotipo = filt.geno))
+    
+    cr.geno <- contrast (em.geno ,
+                         method = "pairwise")
+    
+    cr.geno.1 <- as.data.frame (cr.geno )
+    
+    contrastes <- tibble( genotipo = filt.geno,
+                          subfase=subfase, trait =trait, cr.geno.1)
+    
+    write_csv2 (contrastes, file= str_c ("./Data/procdata/contrastes","_",subfase,"_", trait,"_", filt.geno, ".csv"))
+    
+    em.geno <- cbind (genotipo = filt.geno, trait =trait,
+                      cld (em.geno, sort=FALSE))
+    
+    
+  }))
+  
+  
+}
+
+contrastes_Phi.PS2 <- run_contraste_phi (data.model = lm.phiPS2, trait = "Phips2", subfase =NULL )
+
+
+contrastes_Phi.PS2 <- contrastes_Phi.PS2 %>%
+                      dplyr::mutate (emmean = round (emmean, 2 )) %>%
+                      dplyr::mutate ( SE = round ( SE, 3 )) %>%
+                      dplyr::mutate ( lower.CL  = round ( lower.CL , 2 )) %>%
+                      dplyr::mutate ( upper.CL  = round ( upper.CL , 2 ))
+
+write_csv2 (contrastes_Phi.PS2 , file= "./Data/procdata/contrastes_Phi.PS2.csv")
+
+
+
+
+
+
 
 ############## qp ######
 lm.qp.fo <- lm (qp.fo ~  genotipo + cond.hidr + date + 
@@ -356,6 +415,19 @@ leveneTest ( phiNPQ ~ trat, data = Phi.PSII.MN.3.ciclo.q.1)
 (anava.lm.phiNPQ  <- anova (lm.phiNPQ))
 
 
+contrastes_phiNPQ <- run_contraste_phi (data.model = lm.phiNPQ, trait = "phiNPQ", subfase =NULL )
+
+contrastes_phiNPQ  <- contrastes_phiNPQ  %>%
+  dplyr::mutate (emmean = round (emmean, 2 )) %>%
+  dplyr::mutate ( SE = round ( SE, 3 )) %>%
+  dplyr::mutate ( lower.CL  = round ( lower.CL , 2 )) %>%
+  dplyr::mutate ( upper.CL  = round ( upper.CL , 2 ))
+
+write_csv2 (contrastes_phiNPQ , file= "./Data/procdata/contrastes_phiNPQ.csv")
+
+
+
+
 ############## phiNPQ fast ##################33
 
 lm.phiNPQfast <- lm ( phiNPQfast ~  genotipo + cond.hidr + date + 
@@ -391,6 +463,60 @@ leveneTest (phiNPQfast ~ trat, data = Phi.PSII.MN.3.ciclo.q.1)
 (anava.lm.phiNPQfast  <- anova (lm.phiNPQfast))
 
   
+head (Phi.PSII.MN.3.ciclo.q.1 )
+############## phiNO ##################33
+
+lm.phiNO <- lm (phiNO ~  genotipo + cond.hidr + date + 
+                        genotipo * cond.hidr * date
+                      , data= Phi.PSII.MN.3.ciclo.q.1)
+
+# GRAFICO DE RESIDUOS vs. PREDICHOS 
+plot (lm.phiNO$fitted.values, lm.phiNO$residuals, pch=19, 
+      col="darkblue", xlab="Predichos", ylab="Residuos",
+      main="phiNO")
+abline(h=0,col="red", lwd=2, lty=3)
+grid(ny=20,nx=20)
+
+# HISTOGRAMA DE LOS RESIDUALES
+hist (lm.phiNO$residuals, main="phiNO",freq=F, 
+      xlab="Residuos", ylab="Frecuencia",col="gray")
+x=seq(-5e-15,9e-15,5e-15)
+curve (dnorm (x,mean (lm.phiNO$residuals),
+              sd (lm.phiNO$residuals)),add=T,lwd=2, col="red", lty=1)
+
+# Q-Q PLOT (requiere libreria)
+qqPlot (lm.phiNO$residuals, pch=19, col="darkblue",
+        xlab="Cuantiles teoricos", ylab="Cuantiles observados",
+        main="phiNO")
+
+# PRUEBA DE NORMAILDAD
+shapiro.test (lm.phiNO$residuals)
+
+# HOMOSCEDASTICIDAD: TEST DE LEVENE Y BARTLETT 
+leveneTest (phiNO ~ trat, data = Phi.PSII.MN.3.ciclo.q.1)
+
+# ANAVA
+(anava.lm.phiNO  <- anova (lm.phiNO))
+
+
+contrastes_phiNO <- run_contraste_phi (data.model = lm.phiNO, trait = "phiNO", subfase =NULL )
+
+contrastes_phiNO  <- contrastes_phiNO  %>%
+  dplyr::mutate (emmean = round (emmean, 2 )) %>%
+  dplyr::mutate ( SE = round ( SE, 3 )) %>%
+  dplyr::mutate ( lower.CL  = round ( lower.CL , 2 )) %>%
+  dplyr::mutate ( upper.CL  = round ( upper.CL , 2 ))
+
+write_csv2 (contrastes_phiNO , file= "./Data/procdata/contrastes_phiNO.csv")
+
+
+
+
+
+
+
+
+
 ggscatter (  Phi.PSII.MN.3.ciclo.q.1.T0, x = "phiNPQfast", y = "phiNPQ",
              ylim=c(0,1),
              #xlim=c(0,1),
